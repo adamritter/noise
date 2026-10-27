@@ -42,7 +42,7 @@ from torch.nn import functional as F
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 # Track 3: the model is this folder's model.py, which entries may change; utils/eval.py scores it with --model.
 MODEL_FILE = Path(__file__).resolve().with_name('model.py')
-from model import GPT, GPTConfig, apply_rotary_emb, attention, flex, has_ve, norm, window_mask  # noqa: E402
+from model import GPT, GPTConfig, apply_rotary_emb, attention, flex, has_ve, norm, window_mask, ShiftedKey  # noqa: E402
 from utils.prepare_data import TRAIN_ROWS, load_rows
 from utils.eval import evaluate
 
@@ -124,6 +124,10 @@ class Settings:
 
     def __post_init__(self):
         width, hidden = self.model.n_embd, 4 * self.model.n_embd
+        if self.model.key_offset and (self.estimator != 'cut' or self.switch != 0
+                                      or self.key_path_draws or self.future_draws):
+            raise ValueError('Experimental key_offset currently supports Cut only, with '
+                             'switch=0, key_path_draws=0 and future_draws=0')
         if self.chain_act not in ('fp32', 'bf16'):
             raise ValueError('Unknown chain activation dtype')
         if self.emb_credit not in ('chain', 'mid0'):
@@ -1004,6 +1008,8 @@ class Capture:
         if isinstance(module, nn.Embedding):
             weight_error = torch.zeros_like(module.weight, dtype=torch.float32)
             return weight_error.index_add_(0, x.reshape(-1), error.reshape(-1, error.shape[-1]))
+        if isinstance(module, ShiftedKey):
+            error = module.unshift_credit(error)
         return torch.einsum('btd,bti->di', error, x)
 
 class Boost:

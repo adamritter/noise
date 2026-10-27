@@ -1,0 +1,24 @@
+[
+  {
+    "arm": "base",
+    "updates": 4,
+    "prediction_tokens": 8192,
+    "deterministic_algorithms": true,
+    "maximum_common_weight_difference": 0.0,
+    "teacher_forced_dev_ce_historical": 7.807536423206329,
+    "teacher_forced_dev_ce_port": 7.807536423206329,
+    "source_checkpoint_parity_error": 0.0,
+    "port_checkpoint_parity_error": 0.0
+  },
+  {
+    "arm": "shift",
+    "updates": 4,
+    "prediction_tokens": 8192,
+    "deterministic_algorithms": true,
+    "maximum_common_weight_difference": 0.0,
+    "teacher_forced_dev_ce_historical": 7.8117334842681885,
+    "teacher_forced_dev_ce_port": 7.8117334842681885,
+    "source_checkpoint_parity_error": 0.0,
+    "port_checkpoint_parity_error": 0.0
+  }
+]

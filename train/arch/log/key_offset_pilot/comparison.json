@@ -1,0 +1,70 @@
+{
+  "means": [
+    {
+      "size": "small",
+      "arm": "base",
+      "parameters": 4342025,
+      "fresh_ce": 5.1384231969714165,
+      "validation_ce": 5.123848433441975,
+      "training_seconds": 127.01777843688615,
+      "estimated_tmac": 264.866086518784
+    },
+    {
+      "size": "small",
+      "arm": "shift",
+      "parameters": 4342025,
+      "fresh_ce": 4.918432757258415,
+      "validation_ce": 4.8593011485303155,
+      "training_seconds": 124.5977125094505,
+      "estimated_tmac": 264.866086518784
+    },
+    {
+      "size": "large",
+      "arm": "base",
+      "parameters": 406651145,
+      "fresh_ce": 5.071707181632519,
+      "validation_ce": 5.051539773011909,
+      "training_seconds": 128.15968180203345,
+      "estimated_tmac": 265.02070534144
+    },
+    {
+      "size": "large",
+      "arm": "shift",
+      "parameters": 406651145,
+      "fresh_ce": 4.909239962697029,
+      "validation_ce": 4.85134575954255,
+      "training_seconds": 129.27925994154066,
+      "estimated_tmac": 265.02070534144
+    }
+  ],
+  "pairs": [
+    {
+      "size": "small",
+      "seed": 0,
+      "fresh_delta": -0.2253425568342209,
+      "validation_delta": -0.2765098214149475
+    },
+    {
+      "size": "small",
+      "seed": 1,
+      "fresh_delta": -0.21463832259178162,
+      "validation_delta": -0.2525847484083732
+    },
+    {
+      "size": "large",
+      "seed": 0,
+      "fresh_delta": -0.1940932273864746,
+      "validation_delta": -0.23126533978125607
+    },
+    {
+      "size": "large",
+      "seed": 1,
+      "fresh_delta": -0.1308412104845047,
+      "validation_delta": -0.16912268715746226
+    }
+  ],
+  "metric": "teacher-forced next-token CE",
+  "source_commit": "48e9ea73a7d74c6811a52eaa3deb4c2d76977367",
+  "caveat": "Historical pilot had one unused zero-valued skip_alpha parameter. This focused port omits it.",
+  "checkpoint_evaluation": "Each saved final checkpoint evaluated in a separate process using utils.eval.load_model and utils.eval.evaluate."
+}

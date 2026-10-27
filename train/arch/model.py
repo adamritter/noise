@@ -46,6 +46,15 @@ class GPTConfig:
     ngram_rows: int = 1048576
     ngram_dim: int = 128
     ngram_orders: str = '23s'
+    # Experimental partial raw-key offset; defaults preserve the published record.
+    partial_rope: bool = False
+    key_offset: bool = False
+
+    def __post_init__(self):
+        if self.partial_rope and (self.n_embd % self.n_head or (self.n_embd // self.n_head) % 4):
+            raise ValueError('Partial RoPE requires a head dimension divisible by four')
+        if self.key_offset and (not self.partial_rope or self.n_head != self.n_kv_head):
+            raise ValueError('Key offset requires partial_rope and equal Q/KV head counts')
 
 
 NGRAM_SKIPS = {'s': (2,), 't': (3,), 'u': (2, 3)}  # skip-gram codes: the token with the tokens that many back
@@ -76,6 +85,32 @@ def apply_rotary_emb(x, cos, sin):
     return torch.cat([x1 * cos + x2 * sin, x1 * -sin + x2 * cos], 3)
 
 
+class ShiftedKey(nn.Linear):
+    """Shift only stationary raw-key lanes, BEFORE RMS normalization.
+
+    This differs deliberately from nanoGPT's post-normalization shift. The
+    assembled key has one local nonlinear transform, matching Cut's local FD.
+    """
+    def __init__(self, width, heads):
+        super().__init__(width, width, bias=False)
+        self.heads = heads
+
+    def forward(self, x):
+        z = F.linear(x, self.weight)
+        b,t,d = z.shape
+        h = z.view(b,t,self.heads,d//self.heads)
+        q = h.shape[-1]//4
+        previous = F.pad(h[:,:-1], (0,0,0,0,1,0))
+        return torch.cat([h[...,:q],previous[...,q:2*q],h[...,2*q:3*q],previous[...,3*q:]],-1).reshape_as(z)
+
+    def unshift_credit(self, error):
+        b,t,d = error.shape
+        h = error.reshape(b,t,self.heads,d//self.heads)
+        q = h.shape[-1]//4
+        following = F.pad(h[:,1:], (0,0,0,0,0,1))
+        return torch.cat([h[...,:q],following[...,q:2*q],h[...,2*q:3*q],following[...,3*q:]],-1).reshape_as(error)
+
+
 class CausalSelfAttention(nn.Module):
     def __init__(self, config, layer_idx):
         super().__init__()
@@ -85,7 +120,8 @@ class CausalSelfAttention(nn.Module):
         self.head_dim = self.n_embd // self.n_head
         assert self.n_embd % self.n_head == 0
         self.c_q = nn.Linear(self.n_embd, self.n_head * self.head_dim, bias=False)
-        self.c_k = nn.Linear(self.n_embd, self.n_kv_head * self.head_dim, bias=False)
+        self.c_k = (ShiftedKey(self.n_embd, self.n_head) if config.key_offset else
+                    nn.Linear(self.n_embd, self.n_kv_head * self.head_dim, bias=False))
         self.c_v = nn.Linear(self.n_embd, self.n_kv_head * self.head_dim, bias=False)
         self.c_proj = nn.Linear(self.n_embd, self.n_embd, bias=False)
         # The value embedding is scaled per head by 2 * sigmoid(gate), read from the block input's first 32
@@ -210,6 +246,9 @@ class GPT(nn.Module):
         t = torch.arange(seq_len, dtype=torch.float32, device=device)
         freqs = torch.outer(t, inv_freq)
         cos, sin = (freqs.cos().bfloat16(), freqs.sin().bfloat16())
+        if self.config.partial_rope:
+            cos[:, head_dim//4:] = 1
+            sin[:, head_dim//4:] = 0
         return (cos[None, :, None, :], sin[None, :, None, :])
 
     def _compute_window_sizes(self, config):

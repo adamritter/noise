@@ -1,0 +1,11 @@
+{
+  "adjoint_errors": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "key_weight_directional_fd_error": 6.334488489301293e-12,
+  "future_intervention_max_error": 0.0,
+  "unsupported_probe_combinations_rejected": true,
+  "no_autograd": true
+}

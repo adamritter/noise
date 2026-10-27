@@ -1,0 +1,60 @@
+{
+  "prediction_tokens": 1048576,
+  "records": [
+    {
+      "order": "2",
+      "rows": 4096,
+      "distinct_input_contexts": 271631,
+      "visited_buckets": 4096,
+      "fraction_buckets_visited": 1.0,
+      "distinct_contexts_collapsed": 267535,
+      "mean_lookups_per_visited_bucket": 256.0
+    },
+    {
+      "order": "2",
+      "rows": 1048576,
+      "distinct_input_contexts": 271631,
+      "visited_buckets": 239401,
+      "fraction_buckets_visited": 0.22831058502197266,
+      "distinct_contexts_collapsed": 32230,
+      "mean_lookups_per_visited_bucket": 4.379998412705043
+    },
+    {
+      "order": "3",
+      "rows": 4096,
+      "distinct_input_contexts": 721326,
+      "visited_buckets": 4096,
+      "fraction_buckets_visited": 1.0,
+      "distinct_contexts_collapsed": 717230,
+      "mean_lookups_per_visited_bucket": 256.0
+    },
+    {
+      "order": "3",
+      "rows": 1048576,
+      "distinct_input_contexts": 721326,
+      "visited_buckets": 521566,
+      "fraction_buckets_visited": 0.4974040985107422,
+      "distinct_contexts_collapsed": 199760,
+      "mean_lookups_per_visited_bucket": 2.0104377969422855
+    },
+    {
+      "order": "s",
+      "rows": 4096,
+      "distinct_input_contexts": 452495,
+      "visited_buckets": 4096,
+      "fraction_buckets_visited": 1.0,
+      "distinct_contexts_collapsed": 448399,
+      "mean_lookups_per_visited_bucket": 256.0
+    },
+    {
+      "order": "s",
+      "rows": 1048576,
+      "distinct_input_contexts": 452495,
+      "visited_buckets": 367672,
+      "fraction_buckets_visited": 0.35063934326171875,
+      "distinct_contexts_collapsed": 84823,
+      "mean_lookups_per_visited_bucket": 2.8519332448486696
+    }
+  ],
+  "interpretation": "Lookup coverage of the fixed training inputs only, not a loss metric or nonzero-gradient count."
+}

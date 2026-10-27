@@ -1,0 +1,19 @@
+{
+  "teacher_forced_dev_ce": 5.144013673067093,
+  "teacher_forced_fresh_ce": 5.142431408166885,
+  "final_checkpoint_parity_error": 0.0,
+  "seconds": 136.3201529518701,
+  "steps": 512,
+  "prediction_tokens": 1048576,
+  "probe_full_forwards": 0,
+  "probe_forward_macs": 0,
+  "clean_training_forward_macs": 2285660798976,
+  "aten_estimator_macs_per_step": 517316575232,
+  "estimated_accumulated_forward_macs": 264866086518784,
+  "estimator_macs_status": "ATen FLOP counter divided by two; excludes custom Triton operations and optimizer; probes use analytical dense causal forward MACs. Approximation, not hardware measurement.",
+  "skip_alpha": 0.0,
+  "accepted_probes": 0,
+  "val_loss": 5.124503647579866,
+  "train_seconds": 136.3201529518701,
+  "evaluation_source": "evaluation.json; saved final checkpoint, separate process"
+}
